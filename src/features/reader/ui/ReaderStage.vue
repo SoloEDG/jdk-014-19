@@ -13,6 +13,7 @@ const props = defineProps<{
   panel: Panel;
   location: ReadingLocation;
   mode: ReadingMode;
+  subtitle?: { speaker: string; text: string } | null;
 }>();
 const emit = defineEmits<{
   move: [delta: number];
@@ -97,6 +98,12 @@ function fullscreen() {
     >
       <ChevronRight :size="23" />
     </button>
+    <Transition name="subtitle">
+      <div v-if="subtitle" :key="subtitle.text" class="stage-subtitle">
+        <small>{{ subtitle.speaker }}</small>
+        <p>“{{ subtitle.text }}”</p>
+      </div>
+    </Transition>
     <div class="stage-caption">
       <span
         >{{ mode === "page" ? "整页浏览" : "逐格沉浸" }} <b>·</b>

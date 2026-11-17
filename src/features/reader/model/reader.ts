@@ -28,6 +28,16 @@ export function useReader(doc: Ref<ComicDocument>) {
       };
     }
     if (command.type === "panel") {
+      const owner = doc.value.chapters
+        .flatMap((c) => c.pages)
+        .find((p) => p.panels.some((pa) => pa.id === command.id));
+      const ownerChapter = doc.value.chapters.find((c) =>
+        c.pages.some((p) => p.id === owner?.id),
+      );
+      if (owner && ownerChapter) {
+        at.chapterId = ownerChapter.id;
+        at.pageId = owner.id;
+      }
       at.panelId = command.id;
       at.zoom = 1;
       at.x = at.y = 0;

@@ -3,13 +3,17 @@ import { demoDocument, useLibrary } from "../features/library";
 import { useChapters } from "../features/chapters";
 import { useReader } from "../features/reader";
 import { useAudio } from "../features/audio";
+import { useVoice } from "../features/voice";
 import { useProgress, readSession } from "../features/progress";
 export function useWorkspace() {
   const saved = readSession(),
     doc = ref(saved?.document ?? demoDocument()),
     reader = useReader(doc);
   if (saved) reader.dispatch({ type: "restore", location: saved.location });
-  const progress = useProgress(doc, reader.location, saved),
+  const panel = computed(() => reader.current.value.panel),
+    audio = useAudio(panel),
+    voice = useVoice(doc, reader, saved?.voice ?? null),
+    progress = useProgress(doc, reader.location, saved, voice.cursor),
     library = useLibrary(doc, (id) => {
       reader.dispatch({ type: "chapter", id });
       progress.reconcile();
@@ -17,9 +21,7 @@ export function useWorkspace() {
     chapters = useChapters(doc, () => {
       reader.reconcile();
       progress.reconcile();
-    }),
-    panel = computed(() => reader.current.value.panel),
-    audio = useAudio(panel);
+    });
   function keydown(e: KeyboardEvent) {
     if ((e.target as HTMLElement)?.closest("input,textarea,button,select"))
       return;
@@ -35,5 +37,5 @@ export function useWorkspace() {
   }
   onMounted(() => window.addEventListener("keydown", keydown));
   onBeforeUnmount(() => window.removeEventListener("keydown", keydown));
-  return { doc, reader, progress, library, chapters, audio };
+  return { doc, reader, progress, library, chapters, audio, voice };
 }

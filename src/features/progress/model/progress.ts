@@ -3,6 +3,7 @@ import type {
   Bookmark,
   ComicDocument,
   ReadingLocation,
+  VoiceCursor,
 } from "../../../shared/document";
 import { makeId } from "../../../shared/commands";
 import { writeSession, type SavedSession } from "../lib/storage";
@@ -11,6 +12,7 @@ export function useProgress(
   doc: Ref<ComicDocument>,
   location: Ref<ReadingLocation>,
   saved: SavedSession | null,
+  voice: Ref<VoiceCursor | null>,
 ) {
   const bookmarks = ref<Bookmark[]>(saved?.bookmarks ?? []),
     status = ref("本地自动保存已开启"),
@@ -20,9 +22,10 @@ export function useProgress(
       document: doc.value,
       location: location.value,
       bookmarks: bookmarks.value,
+      voice: voice.value,
     });
   }
-  watch([doc, location, bookmarks], save, { deep: true });
+  watch([doc, location, bookmarks, voice], save, { deep: true });
   function add() {
     const same = bookmarks.value.find(
       (b) =>

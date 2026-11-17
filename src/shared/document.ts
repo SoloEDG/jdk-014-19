@@ -32,6 +32,28 @@ export interface ComicDocument {
   title: string;
   author: string;
   chapters: Chapter[];
+  voices?: VoiceTrack[];
+}
+export interface SentenceCue {
+  id: string;
+  panelId: string;
+  index: number;
+  text: string;
+  start: number;
+  end: number;
+  tail: number;
+  confirmed: boolean;
+}
+export interface VoiceTrack {
+  chapterId: string;
+  name: string;
+  audio: string;
+  duration: number;
+  cues: SentenceCue[];
+}
+export interface VoiceCursor {
+  chapterId: string;
+  cueId: string;
 }
 export interface ReadingLocation {
   chapterId: string;

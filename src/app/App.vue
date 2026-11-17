@@ -15,6 +15,7 @@ import { LibraryPanel } from "../features/library";
 import { ChapterPanel } from "../features/chapters";
 import { ReaderStage, PanelStrip } from "../features/reader";
 import { AudioPanel } from "../features/audio";
+import { VoicePanel } from "../features/voice";
 import { ProgressPanel } from "../features/progress";
 import { useWorkspace } from "./workspace";
 const {
@@ -24,6 +25,7 @@ const {
   library: l,
   chapters: c,
   audio: a,
+  voice: v,
 } = useWorkspace();
 const current = r.current,
   at = r.location,
@@ -31,7 +33,8 @@ const current = r.current,
   metrics = p.metrics,
   bookmarks = p.bookmarks,
   status = p.status,
-  cue = a.cue;
+  cue = a.cue,
+  subtitle = v.subtitle;
 const chapterIndex = computed(
   () => doc.value.chapters.findIndex((c) => c.id === at.value.chapterId) + 1,
 );
@@ -135,6 +138,7 @@ function focus(id: string) {
           :panel="current.panel"
           :location="at"
           :mode="mode"
+          :subtitle="subtitle"
           @move="r.dispatch({ type: 'move', delta: $event })"
           @pan="r.pan"
           @panel="focus"
@@ -165,7 +169,7 @@ function focus(id: string) {
           @toggle="a.toggle"
           @volume="a.volume.value = $event"
           @dialogue="a.dialogue.value = !a.dialogue.value"
-        /><ProgressPanel
+        /><VoicePanel :voice="v" /><ProgressPanel
           :bookmarks="bookmarks"
           :percent="metrics.percent"
           :status="status"
